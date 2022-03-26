@@ -83,9 +83,16 @@ class AdjacencyListGraph(AbstractGraph[T, V, W]):
             self._node_to_inbound = defaultdict(dict)
 
     def adjacent(self, x: T, y: T) -> bool:
+        # The check avoids the inadvertent creation of a node entry
+        if x not in self._node_values:
+            raise KeyError
+
         return y in self._node_to_outbound[x]
 
     def neighbors(self, x: T) -> typing.Iterator[T]:
+        # The check avoids the inadvertent creation of a node entry
+        if x not in self._node_values:
+            raise KeyError
         yield from self._node_to_outbound[x].keys()
 
     def add_node(self, x: T, value: V = None) -> typing.NoReturn:
@@ -95,8 +102,10 @@ class AdjacencyListGraph(AbstractGraph[T, V, W]):
         self._node_to_outbound[x][y] = weight
         self._node_to_inbound[y][x] = weight
 
-        self._node_values[x] = None
-        self._node_values[y] = None
+        # This creates the entries if it's the first time the nodes are inserted in the graph
+        # otherwise, the value of the node is left unchanged
+        self._node_values.setdefault(x, None)
+        self._node_values.setdefault(y, None)
 
     def remove_node(self, x: T) -> typing.NoReturn:
         outbound = self._node_to_outbound.pop(x, {})
@@ -123,10 +132,16 @@ class AdjacencyListGraph(AbstractGraph[T, V, W]):
         return self._node_to_outbound[x][y]
 
     def set_edge_weight(self, x: T, y: T, weight: W) -> typing.NoReturn:
+        # since this should not create nodes or edges, a check is executed
+        if y not in self._node_to_outbound[x] or x not in self._node_to_inbound[y]:
+            raise KeyError
         self._node_to_outbound[x][y] = weight
         self._node_to_inbound[y][x] = weight
 
     def set_node_value(self, x: T, value: V) -> typing.NoReturn:
+        # since this should not create nodes, the existence of node is checked for
+        if x not in self._node_values:
+            raise KeyError
         self._node_values[x] = value
 
     @property
@@ -135,9 +150,6 @@ class AdjacencyListGraph(AbstractGraph[T, V, W]):
 
     @property
     def edges(self) -> typing.Iterator[typing.Tuple[T, T]]:
-        neighbor_dicts = [self._node_to_outbound, self._node_to_inbound] if self.directed else [self._node_to_outbound]
-
-        for neighbor_dict in neighbor_dicts:
-            for x, neighbors in neighbor_dict.items():
-                for y in neighbors.keys():
-                    yield x, y
+        for x, neighbors in self._node_to_outbound.items():
+            for y in neighbors.keys():
+                yield x, y

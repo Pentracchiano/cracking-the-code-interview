@@ -1,6 +1,5 @@
 import dataclasses
 import typing
-from typing import Any
 
 
 T = typing.TypeVar('T')
@@ -29,15 +28,5 @@ class LinkedListNode(typing.Generic[T]):
         if self.next:
             return f"{self.data} -> {self.next}"  # O(n^2) string concatenation, care. OK for my purposes.
         return f"{self.data}"
-
-
-def test_equality():
-    a = LinkedListNode.create_linked_list_from_iterable(range(10))
-    b = LinkedListNode.create_linked_list_from_iterable(range(10))
-    print(a, b)
-
-    assert a == b
-
-
 
 

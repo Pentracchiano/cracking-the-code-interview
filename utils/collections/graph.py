@@ -26,19 +26,19 @@ class AbstractGraph(ABC, typing.Generic[T, V, W]):
         pass
 
     @abstractmethod
-    def add_node(self, x: T, value: V = None) -> typing.NoReturn:
+    def add_node(self, x: T, value: V = None) -> None:
         pass
 
     @abstractmethod
-    def add_edge(self, x: T, y: T, weight: W = None) -> typing.NoReturn:
+    def add_edge(self, x: T, y: T, weight: W = None) -> None:
         pass
 
     @abstractmethod
-    def remove_node(self, x: T) -> typing.NoReturn:
+    def remove_node(self, x: T) -> None:
         pass
 
     @abstractmethod
-    def remove_edge(self, x: T, y: T) -> typing.NoReturn:
+    def remove_edge(self, x: T, y: T) -> None:
         pass
 
     @abstractmethod
@@ -50,12 +50,13 @@ class AbstractGraph(ABC, typing.Generic[T, V, W]):
         pass
 
     @abstractmethod
-    def set_node_value(self, x: T, value: V) -> typing.NoReturn:
+    def set_node_value(self, x: T, value: V) -> None:
         pass
 
     @abstractmethod
-    def set_edge_weight(self, x: T, y: T, weight: W) -> typing.NoReturn:
+    def set_edge_weight(self, x: T, y: T, weight: W) -> None:
         pass
+
     @property
     @abstractmethod
     def nodes(self) -> typing.Iterator[T]:
@@ -95,10 +96,10 @@ class AdjacencyListGraph(AbstractGraph[T, V, W]):
             raise KeyError
         yield from self._node_to_outbound[x].keys()
 
-    def add_node(self, x: T, value: V = None) -> typing.NoReturn:
+    def add_node(self, x: T, value: V = None) -> None:
         self._node_values[x] = value
 
-    def add_edge(self, x: T, y: T, weight: W = None) -> typing.NoReturn:
+    def add_edge(self, x: T, y: T, weight: W = None) -> None:
         self._node_to_outbound[x][y] = weight
         self._node_to_inbound[y][x] = weight
 
@@ -107,7 +108,7 @@ class AdjacencyListGraph(AbstractGraph[T, V, W]):
         self._node_values.setdefault(x, None)
         self._node_values.setdefault(y, None)
 
-    def remove_node(self, x: T) -> typing.NoReturn:
+    def remove_node(self, x: T) -> None:
         outbound = self._node_to_outbound.pop(x, {})
         inbound = self._node_to_inbound.pop(x, {})
 
@@ -121,7 +122,7 @@ class AdjacencyListGraph(AbstractGraph[T, V, W]):
 
         del self._node_values[x]
 
-    def remove_edge(self, x: T, y: T) -> typing.NoReturn:
+    def remove_edge(self, x: T, y: T) -> None:
         del self._node_to_outbound[x][y]
         del self._node_to_inbound[y][x]
 
@@ -131,14 +132,14 @@ class AdjacencyListGraph(AbstractGraph[T, V, W]):
     def get_edge_weight(self, x: T, y: T) -> W:
         return self._node_to_outbound[x][y]
 
-    def set_edge_weight(self, x: T, y: T, weight: W) -> typing.NoReturn:
+    def set_edge_weight(self, x: T, y: T, weight: W) -> None:
         # since this should not create nodes or edges, a check is executed
         if y not in self._node_to_outbound[x] or x not in self._node_to_inbound[y]:
             raise KeyError
         self._node_to_outbound[x][y] = weight
         self._node_to_inbound[y][x] = weight
 
-    def set_node_value(self, x: T, value: V) -> typing.NoReturn:
+    def set_node_value(self, x: T, value: V) -> None:
         # since this should not create nodes, the existence of node is checked for
         if x not in self._node_values:
             raise KeyError

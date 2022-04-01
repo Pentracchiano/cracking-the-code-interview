@@ -6,7 +6,7 @@ import typing
 T = typing.TypeVar('T')
 
 
-@dataclasses.dataclass(repr=False)
+@dataclasses.dataclass(repr=False, eq=False)
 class BinaryTree(typing.Generic[T]):
     value: T
     left: 'BinaryTree[T]' = None

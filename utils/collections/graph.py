@@ -57,6 +57,14 @@ class AbstractGraph(ABC, typing.Generic[T, V, W]):
     def set_edge_weight(self, x: T, y: T, weight: W) -> None:
         pass
 
+    @abstractmethod
+    def in_degree(self, x: T) -> int:
+        pass
+
+    @abstractmethod
+    def out_degree(self, x: T) -> int:
+        pass
+
     @property
     @abstractmethod
     def nodes(self) -> typing.Iterator[T]:
@@ -144,6 +152,16 @@ class AdjacencyListGraph(AbstractGraph[T, V, W]):
         if x not in self._node_values:
             raise KeyError
         self._node_values[x] = value
+
+    def in_degree(self, x: T) -> int:
+        if x not in self._node_values:
+            raise KeyError
+        return len(self._node_to_inbound[x])
+
+    def out_degree(self, x: T) -> int:
+        if x not in self._node_values:
+            raise KeyError
+        return len(self._node_to_outbound[x])
 
     @property
     def nodes(self) -> typing.Iterator[T]:

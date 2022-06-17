@@ -17,9 +17,13 @@ def _is_balanced_recursive(tree: BinaryTree) -> typing.Tuple[bool, int]:
         return True, 0
 
     is_balanced_left, height_left = _is_balanced_recursive(tree.left)
+    if not is_balanced_left:
+        return False, 0
     is_balanced_right, height_right = _is_balanced_recursive(tree.right)
+    if not is_balanced_right:
+        return False, 0
 
-    return is_balanced_left and is_balanced_right and abs(height_right - height_left) <= 1, max(height_right, height_left) + 1
+    return abs(height_right - height_left) <= 1, max(height_right, height_left) + 1
 
 
 @pytest.mark.parametrize('size', [1, 10, 20, 50, 100])

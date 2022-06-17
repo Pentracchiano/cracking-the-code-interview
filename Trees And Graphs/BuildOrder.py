@@ -26,9 +26,15 @@ def projects_build(projects: typing.Sequence[Project], dependencies: typing.Sequ
         dependency_graph.add_edge(dependency.father, dependency.child)
 
     queue: typing.Deque[Project] = collections.deque()
+
+    # can't remove edges during iterations!
+    in_degrees: typing.Dict[Project, int] = {}
     for project in dependency_graph.nodes:
-        if dependency_graph.in_degree(project) == 0:
+        current_in_degree = dependency_graph.in_degree(project)
+        if current_in_degree == 0:
             queue.append(project)
+        else:
+            in_degrees[project] = current_in_degree
 
     build: typing.List[Project] = []
     while len(queue) > 0:
@@ -36,9 +42,10 @@ def projects_build(projects: typing.Sequence[Project], dependencies: typing.Sequ
 
         build.append(project)
         for child in dependency_graph.neighbors(project):
-            dependency_graph.remove_edge(project, child)
-            if dependency_graph.in_degree(child) == 0:
+            in_degrees[child] -= 1
+            if in_degrees[child] == 0:
                 queue.append(child)
+                del in_degrees[child]
 
     if len(build) != len(projects):
         return None

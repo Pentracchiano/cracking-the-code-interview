@@ -32,10 +32,11 @@ def _validate_bst(root: BinaryTree[CT] | None, min_value: CT | None, max_value: 
     if max_value is not None and root.value > max_value:
         return False
 
-    is_left_bst = _validate_bst(root.left, min_value, root.value)
-    is_right_bst = _validate_bst(root.right, root.value, max_value)
+    # short-circuit evaluation
+    if not _validate_bst(root.left, min_value, root.value) or not _validate_bst(root.right, root.value, max_value):
+        return False
 
-    return is_left_bst and is_right_bst
+    return True
 
 
 def test_validate_bst():

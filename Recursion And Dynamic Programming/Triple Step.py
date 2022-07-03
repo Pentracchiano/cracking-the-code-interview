@@ -2,6 +2,8 @@
 # Implement a method to count how many possible ways the child can run up the stairs.
 
 def ways_to_climb_stairs(self, n: int) -> int:
+    # O(n) and easily generalizable to k jumps
+
     last_numbers = [0, 1, 1]
 
     if n < 3:
